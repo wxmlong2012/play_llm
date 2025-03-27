@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+        #chatbox { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: auto; }
+        .message { margin: 5px 0; padding: 8px; border-radius: 5px; }
+        .user { background: #007bff; color: white; text-align: right; }
+        .bot { background: #ddd; color: black; text-align: left; }
+        #userInput { border: 1px solid #ccc; padding: 10px; height: 100px; width: 500px; }
+    </style>
+</head>
+<body>
+
+    <h2>Chatbot</h2>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Type a message..." />
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        async function sendMessage() {
+            let inputField = document.getElementById("userInput");
+            let message = inputField.value;
+            if (!message) return;
+
+            appendMessage("You: " + message, "user");
+            inputField.value = "";
+
+            let response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message })
+            });
+
+            let data = await response.json();
+            appendMessage("Bot: " + data.response, "bot");
+        }
+
+        function appendMessage(text, className) {
+            let chatbox = document.getElementById("chatbox");
+            let div = document.createElement("div");
+            div.textContent = text;
+            div.classList.add("message", className);
+            chatbox.appendChild(div);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+    </script>
+
+</body>
+</html>
